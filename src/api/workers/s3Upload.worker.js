@@ -23,6 +23,7 @@ const upload = async (email, buffer, originalname) => {
         return data;
     } catch (err) {
         console.log(err);
+        return false;
 
     }
 }

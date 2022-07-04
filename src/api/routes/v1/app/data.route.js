@@ -17,8 +17,8 @@ const schema = {
     }),
 }
 
-router.post('/uploadImage', validate(schema.uploadImage), data.uploadImage)
+router.post('/uploadImage', data.uploadImage)
 
-router.post('/sendMessage', validate(schema.sendNotif), data.sendMessage)
+router.post('/sendMessage', data.sendMessage)
 
 module.exports = router
