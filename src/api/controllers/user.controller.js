@@ -49,6 +49,7 @@ exports.signup = async (req, res) => {
 
     return res.status(200).json({ message: 'Check email for verification' })
   } catch (error) {
+    console.log(error)
     return res.status(400).json({ message: 'Something went wrong' })
   }
 }
@@ -75,7 +76,7 @@ exports.login = async (req, res) => {
 
     return res.header('Authentication', token).json({ message: 'Login Successful' })
   } catch (error) {
-    console.log(error);
+    console.log(error)
     return res.status(400).json({ message: 'Something went wrong' })
   }
 }
@@ -101,6 +102,7 @@ exports.resendEmail = async (req, res) => {
     console.log(link)
     return res.status(200).json({ message: 'Check email for verification' })
   } catch (error) {
+    console.log(error)
     return res.status(400).json({ message: 'Something went wrong' })
   }
 }
@@ -134,13 +136,13 @@ exports.verify = async (req, res) => {
 }
 
 exports.addDevice = async (req, res) => {
-  const {token, type, name} = req.body
+  const { token, type, name } = req.body
   try {
     const user = await User.findById(req.user.id)
     if (!user) { return res.status(400).json({ message: 'User does not exist' }) }
     // check if device token already exists or name already exists
     const device = user.devices.find(device => {
-      let condition = false;
+      let condition = false
       if (device.token === token) {
         condition = true
       }
@@ -150,7 +152,7 @@ exports.addDevice = async (req, res) => {
       return condition
     })
     if (device) { return res.status(400).json({ message: 'Device already exists' }) }
-    user.devices.push({token, type, name})
+    user.devices.push({ token, type, name })
     await user.save()
     return res.status(200).json({ message: 'Device added' })
   } catch (err) {
@@ -160,13 +162,13 @@ exports.addDevice = async (req, res) => {
 }
 
 exports.removeDevice = async (req, res) => {
-  const {token, name} = req.body
+  const { token, name } = req.body
   try {
     const user = await User.findById(req.user.id)
     if (!user) { return res.status(400).json({ message: 'User does not exist' }) }
     // check if device token already exists or name already exists
     const device = user.devices.find(device => {
-      let condition = false;
+      let condition = false
       if (device.token === token) {
         condition = true
       }
@@ -177,7 +179,7 @@ exports.removeDevice = async (req, res) => {
     })
     if (!device) { return res.status(400).json({ message: 'Device does not exist' }) }
     user.devices = user.devices.filter(device => {
-      let condition = false;
+      let condition = false
       if (device.token === token) {
         condition = true
       }
