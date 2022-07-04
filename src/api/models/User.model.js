@@ -3,7 +3,11 @@ const mongoose = require('mongoose')
 const UserSchema = new mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
-  devices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Devices' }],
+  devices: [{
+    token: { type: String, unique: true },
+    type: { type: String },
+    name: { type: String, unique: true }
+  }],
   IsVerified: { type: Boolean, default: false }
 })
 

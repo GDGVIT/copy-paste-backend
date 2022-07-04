@@ -3,7 +3,7 @@ const router = require('express').Router()
 const Joi = require('joi')
 const data = require(join(__dirname, '..', '..', '..', 'controllers', 'data.controller'))
 const validate = require(join(__dirname, '..', '..', '..', 'middleware', 'validate.middleware'))
-// const authorise = require(join(__dirname, '..', '..', '..', 'middleware', 'authorise.middleware'))
+const authorise = require(join(__dirname, '..', '..', '..', 'middleware', 'authorise.middleware'))
 
 const schema = {
     uploadImage: Joi.object().keys({
@@ -17,8 +17,8 @@ const schema = {
     }),
 }
 
-router.post('/uploadImage', data.uploadImage)
+router.post('/uploadImage',authorise, data.uploadImage)
 
-router.post('/sendMessage', data.sendMessage)
+router.post('/sendMessage',authorise, data.sendMessage)
 
 module.exports = router

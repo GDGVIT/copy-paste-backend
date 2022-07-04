@@ -75,6 +75,7 @@ exports.login = async (req, res) => {
 
     return res.header('Authentication', token).json({ message: 'Login Successful' })
   } catch (error) {
+    console.log(error);
     return res.status(400).json({ message: 'Something went wrong' })
   }
 }
@@ -129,5 +130,77 @@ exports.verify = async (req, res) => {
   } catch (error) {
     console.log(error)
     return res.status(400).json({ message: 'Something went wrong' })
+  }
+}
+
+exports.addDevice = async (req, res) => {
+  const {token, type, name} = req.body
+  try {
+    const user = await User.findById(req.user.id)
+    if (!user) { return res.status(400).json({ message: 'User does not exist' }) }
+    // check if device token already exists or name already exists
+    const device = user.devices.find(device => {
+      let condition = false;
+      if (device.token === token) {
+        condition = true
+      }
+      if (device.name === name) {
+        condition = true
+      }
+      return condition
+    })
+    if (device) { return res.status(400).json({ message: 'Device already exists' }) }
+    user.devices.push({token, type, name})
+    await user.save()
+    return res.status(200).json({ message: 'Device added' })
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({ message: 'Something went wrong' })
+  }
+}
+
+exports.removeDevice = async (req, res) => {
+  const {token, name} = req.body
+  try {
+    const user = await User.findById(req.user.id)
+    if (!user) { return res.status(400).json({ message: 'User does not exist' }) }
+    // check if device token already exists or name already exists
+    const device = user.devices.find(device => {
+      let condition = false;
+      if (device.token === token) {
+        condition = true
+      }
+      if (device.name === name) {
+        condition = true
+      }
+      return condition
+    })
+    if (!device) { return res.status(400).json({ message: 'Device does not exist' }) }
+    user.devices = user.devices.filter(device => {
+      let condition = false;
+      if (device.token === token) {
+        condition = true
+      }
+      if (device.name === name) {
+        condition = true
+      }
+      return !condition
+    })
+    await user.save()
+    return res.status(200).json({ message: 'Device removed' })
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({ message: 'Something went wrong' })
+  }
+}
+
+exports.getDevices = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+    if (!user) { return res.status(400).json({ message: 'User does not exist' }) }
+    return res.status(200).json({ devices: user.devices })
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({ message: 'Something went wrong' })
   }
 }

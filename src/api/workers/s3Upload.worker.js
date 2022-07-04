@@ -5,7 +5,7 @@ const s3 = new AWS.S3({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
-const upload = async (email, buffer, originalname) => {
+const upload = async (id, buffer, originalname) => {
     try {
         // check if image
         const fileType = buffer.toString('hex', 0, 4).toLowerCase()
@@ -16,7 +16,7 @@ const upload = async (email, buffer, originalname) => {
         // upload image to s3
         const params = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Key: `${Date.now()}-${email}.${fileExtension}`,
+            Key: `${Date.now()}-${id}.${fileExtension}`,
             Body: buffer,
         };
         const data = await s3.upload(params).promise();
