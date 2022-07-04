@@ -26,7 +26,7 @@ const schema = {
   removeDevice: Joi.object({
     token: Joi.string(),
     name: Joi.string()
-  }),
+  }).or('token', 'name')
 }
 
 router.post('/signup', validate(schema.signup, 'body'), user.signup)

@@ -6,19 +6,19 @@ const validate = require(join(__dirname, '..', '..', '..', 'middleware', 'valida
 const authorise = require(join(__dirname, '..', '..', '..', 'middleware', 'authorise.middleware'))
 
 const schema = {
-    uploadImage: Joi.object().keys({
+    uploadImage: Joi.object({
         // image should be a file
         image: Joi.object().required(),
-        // deviceToken: Joi.stri`ng().required()
+        deviceToken: Joi.string().required(),
     }),
-    sendMessage: Joi.object().keys({
+    sendMessage: Joi.object({
         deviceToken: Joi.string().required(),
         message: Joi.string().required()
-    }),
+    })
 }
 
-router.post('/uploadImage',authorise, data.uploadImage)
+router.post('/uploadImage', authorise, validate(schema.uploadImage, 'body'), data.uploadImage)
 
-router.post('/sendMessage',authorise, data.sendMessage)
+router.post('/sendMessage', authorise, validate(schema.sendMessage, 'body'), data.sendMessage)
 
 module.exports = router
