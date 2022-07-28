@@ -98,7 +98,7 @@ exports.resendEmail = async (req, res) => {
       token: crypto.randomBytes(32).toString('hex')
     }).save()
     const link = 'http://' + req.get('host') + '/api/v1/' + 'user/verify/' + user.id + '/' + token.token
-    // await sendEmail(user.email, 'Verify Email', link)
+    await sendEmail(user.email, 'Verify Email', link)
     console.log(link)
     return res.status(200).json({ message: 'Check email for verification' })
   } catch (error) {
