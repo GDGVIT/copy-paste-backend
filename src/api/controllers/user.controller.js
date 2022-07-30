@@ -110,7 +110,7 @@ exports.verify = async (req, res) => {
   const hash = req.params.hash
   try {
     const user = await User.findById(req.params.id)
-    
+
     if (!user) { return res.status(400).send('Invalid link') }
     if (user.IsVerified) { return res.status(400).send('User already verified') }
     if (user.hash !== hash) { return res.status(401).json({ success: false, error: "Hash doesn't match" }) }
