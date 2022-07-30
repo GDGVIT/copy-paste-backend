@@ -27,19 +27,23 @@ const createToken = async (payload) => {
 exports.signup = async (req, res) => {
   const { email, password, confirm } = req.body
   try {
-    let user = await User.findOne({ email })
-    if (user) { return res.status(400).json({ message: 'User Already Exists' }) }
+    const user = await User.findOne({ email })
+    if (user) {
+      return res.status(409).json({
+        success: false,
+        error: 'Email already exists'
+      })
+    }
     if (password !== confirm) { return res.status(400).json({ message: 'Passwords do not match' }) }
 
-    user = new User({ email, password })
-    const salt = await bcrypt.genSalt(10)
-    user.password = await bcrypt.hash(user.password, salt)
-
     const hash = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-    user.hash = hash
-    const link = 'http://' + req.get('host') + '/api/v1/' + 'user/verify/' + user.id + '/' + hash
-    await sendEmail(user.email, 'Verify Email', link)
-    await user.save()
+
+    const newUser = new User({ email, password, hash })
+    const salt = await bcrypt.genSalt(10)
+    newUser.password = await bcrypt.hash(newUser.password, salt)
+    const link = 'http://' + req.get('host') + '/api/v1/user/verify/' + newUser.id + '/' + hash
+    await sendEmail(email, 'Verify Your Email', `Verify your email at ${link}`)
+    await newUser.save()
     console.log(link)
 
     return res.status(200).json({ message: 'Check email for verification' })
