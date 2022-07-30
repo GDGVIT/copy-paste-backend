@@ -35,7 +35,7 @@ router.post('/login', validate(schema.login, 'body'), user.login)
 
 router.post('/resend', validate(schema.resend, 'body'), user.resendEmail)
 
-router.get('/verify/:id/:token', user.verify)
+router.get('/verify/:id/:hash', user.verify)
 
 router.post('/add-device', authorise, validate(schema.addDevice, 'body'), user.addDevice)
 

@@ -1,9 +1,7 @@
 require('dotenv').config()
 const { join } = require('path')
 const User = require(join(__dirname, '..', 'models', 'User.model'))
-const Token = require(join(__dirname, '..', 'models', 'Token.model'))
 const sendEmail = require(join(__dirname, '..', 'workers', 'sendEmail.worker'))
-const crypto = require('crypto')
 const paseto = require('paseto') // Token Auth
 const bcrypt = require('bcryptjs')
 const { V4 } = paseto
@@ -37,12 +35,9 @@ exports.signup = async (req, res) => {
     const salt = await bcrypt.genSalt(10)
     user.password = await bcrypt.hash(user.password, salt)
 
-    const token = await new Token({
-      userId: user._id,
-      token: crypto.randomBytes(32).toString('hex')
-    }).save()
-
-    const link = 'http://' + req.get('host') + '/api/v1/' + 'user/verify/' + user.id + '/' + token.token
+    const hash = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    user.hash = hash
+    const link = 'http://' + req.get('host') + '/api/v1/' + 'user/verify/' + user.id + '/' + hash
     await sendEmail(user.email, 'Verify Email', link)
     await user.save()
     console.log(link)
@@ -93,11 +88,10 @@ exports.resendEmail = async (req, res) => {
     if (!user) { return res.status(400).json({ message: 'User does not exist' }) }
     if (user.IsVerified) { return res.status(400).json({ message: 'User already verified' }) }
 
-    const token = await new Token({
-      userId: user._id,
-      token: crypto.randomBytes(32).toString('hex')
-    }).save()
-    const link = 'http://' + req.get('host') + '/api/v1/' + 'user/verify/' + user.id + '/' + token.token
+    const hash = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    user.hash = hash
+    await user.save()
+    const link = 'http://' + req.get('host') + '/api/v1/' + 'user/verify/' + user.id + '/' + hash
     await sendEmail(user.email, 'Verify Email', link)
     console.log(link)
     return res.status(200).json({ message: 'Check email for verification' })
@@ -108,26 +102,21 @@ exports.resendEmail = async (req, res) => {
 }
 
 /*
-  @route   GET api/v1/user/verify/:id/:token
+  @route   GET api/v1/user/verify/:id/:hash
   @desc    Verify email
   @access  Public
 */
 exports.verify = async (req, res) => {
+  const hash = req.params.hash
   try {
-    const user = await User.findOne({ _id: req.params.id })
-
+    const user = await User.findById(req.params.id)
+    
     if (!user) { return res.status(400).send('Invalid link') }
-
-    const token = await Token.findOne({
-      userId: user._id,
-      token: req.params.token
-    })
-
-    if (!token) { return res.status(400).send('Invalid link') }
-
-    await User.findOneAndUpdate({ _id: req.params.id }, { IsVerified: true })
-    await Token.findByIdAndRemove(token._id)
-
+    if (user.IsVerified) { return res.status(400).send('User already verified') }
+    if (user.hash !== hash) { return res.status(401).json({ success: false, error: "Hash doesn't match" }) }
+    user.IsVerified = true
+    user.hash = ''
+    await user.save()
     return res.status(200).send('Email verified')
   } catch (error) {
     console.log(error)
