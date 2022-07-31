@@ -1,3 +1,5 @@
+const chalk = require('chalk')
+
 const getTimeStamp = () => {
   const date = new Date()
   return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
@@ -5,33 +7,33 @@ const getTimeStamp = () => {
 
 const info = (namespace, message, object) => {
   if (object) {
-    console.log(`[${getTimeStamp()}] [${namespace}] [INFO] ${message}`, object)
+    console.log(chalk.green(`[${getTimeStamp()}] [${namespace}] [INFO] ${message}`, object))
   } else {
-    console.log(`[${getTimeStamp()}] [${namespace}] [INFO] ${message}`)
+    console.log(chalk.green(`[${getTimeStamp()}] [${namespace}] [INFO] ${message}`))
   }
 }
 
 const warn = (namespace, message, object) => {
   if (object) {
-    console.warn(`[${getTimeStamp()}] [${namespace}] [WARN] ${message}`, object)
+    console.warn(chalk.green(`[${getTimeStamp()}] [${namespace}] [WARN] ${message}`, object))
   } else {
-    console.warn(`[${getTimeStamp()}] [${namespace}] [WARN] ${message}`)
+    console.warn(chalk.yellow(`[${getTimeStamp()}] [${namespace}] [WARN] ${message}`))
   }
 }
 
 const error = (namespace, message, object) => {
   if (object) {
-    console.error(`[${getTimeStamp()}] [${namespace}] [ERROR] ${message}`, object)
+    console.error(chalk.red(`[${getTimeStamp()}] [${namespace}] [ERROR] ${message}`, object))
   } else {
-    console.error(`[${getTimeStamp()}] [${namespace}] [ERROR] ${message}`)
+    console.error(chalk.red(`[${getTimeStamp()}] [${namespace}] [ERROR] ${message}`))
   }
 }
 
 const debug = (namespace, message, object) => {
   if (object) {
-    console.debug(`[${getTimeStamp()}] [${namespace}] [DEBUG] ${message}`, object)
+    console.debug(chalk.blue(`[${getTimeStamp()}] [${namespace}] [DEBUG] ${message}`, object))
   } else {
-    console.debug(`[${getTimeStamp()}] [${namespace}] [DEBUG] ${message}`)
+    console.debug(chalk.blue(`[${getTimeStamp()}] [${namespace}] [DEBUG] ${message}`))
   }
 }
 

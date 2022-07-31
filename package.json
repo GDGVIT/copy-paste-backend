@@ -4,7 +4,7 @@
   "description": "Backend for Copy Paste App",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --timeout 15000  --recursive ./tests/*.test.js --exit",
     "start": "node src/index.js",
     "lint": "standard --fix"
   },
@@ -14,6 +14,7 @@
     "aws-sdk": "^2.1167.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
+    "chalk": "^4.1.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.0.1",
@@ -29,7 +30,10 @@
     "paseto": "^3.1.0"
   },
   "devDependencies": {
+    "chai": "^4.3.6",
+    "chai-http": "^4.3.0",
     "eslint": "^8.13.0",
+    "mocha": "^10.0.0",
     "standard": "^16.0.4"
   }
 }

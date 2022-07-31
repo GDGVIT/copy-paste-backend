@@ -34,7 +34,7 @@ exports.signup = async (req, res) => {
         error: 'Email already exists'
       })
     }
-    if (password !== confirm) { return res.status(400).json({ message: 'Passwords do not match' }) }
+    if (password !== confirm) { return res.status(422).json({ success: false, error: 'Passwords do not match' }) }
 
     const hash = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 
@@ -42,14 +42,14 @@ exports.signup = async (req, res) => {
     const salt = await bcrypt.genSalt(10)
     newUser.password = await bcrypt.hash(newUser.password, salt)
     const link = 'http://' + req.get('host') + '/api/v1/user/verify/' + newUser.id + '/' + hash
-    await sendEmail(email, 'Verify Your Email', `Verify your email at ${link}`)
     await newUser.save()
+    await sendEmail(email, 'Verify Your Email', `Verify your email at ${link}`)
     console.log(link)
 
-    return res.status(200).json({ message: 'Check email for verification' })
+    return res.status(200).json({ success: true, message: 'Check email for verification' })
   } catch (error) {
     console.log(error)
-    return res.status(400).json({ message: 'Something went wrong' })
+    return res.status(400).json({  success: false, error: 'Something went wrong' })
   }
 }
 
@@ -73,7 +73,7 @@ exports.login = async (req, res) => {
     }
     const token = await createToken(payload)
 
-    return res.status(200).json({ message: 'Login Successful', token })
+    return res.status(200).json({ message: 'Login Successful', email, token })
   } catch (error) {
     console.log(error)
     return res.status(400).json({ message: 'Something went wrong' })
